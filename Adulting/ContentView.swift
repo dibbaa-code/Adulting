@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import Vapi
 
 struct ContentView: View {
+    @StateObject private var vapiManager = VapiManager.shared
     @State private var isListening = true
     @State private var animationAmount = 1.0
     
@@ -25,7 +27,7 @@ struct ContentView: View {
                 
                 VStack {
                     // Greeting heading
-                    Text("Hello! How can I help you?")
+                    Text(vapiManager.isCallActive ? "I'm listening..." : "Hello! How can I help you?")
                         .font(.title2)
                         .fontWeight(.medium)
                         .foregroundColor(.white)
@@ -42,8 +44,17 @@ struct ContentView: View {
                         // Audio visualization bars
                         HStack(spacing: 4) {
                             ForEach(0..<14) { index in
-                                AudioBar(color: barColors[index], isAnimating: isListening, delay: Double(index) * 0.05)
+                                AudioBar(color: barColors[index], 
+                                        isAnimating: vapiManager.isUserSpeaking || vapiManager.isAssistantSpeaking, 
+                                        delay: Double(index) * 0.05)
                             }
+                        }
+                        
+                        // Loading indicator when connecting
+                        if vapiManager.isConnecting {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(1.5)
                         }
                     }
                     .padding(.bottom, 80)
@@ -52,18 +63,22 @@ struct ContentView: View {
                     
                     // Bottom control buttons
                     HStack(spacing: 50) {
-                        // Microphone button for muting/unmuting
+                        // Microphone button for starting/stopping the call
                         Button(action: {
-                            isListening.toggle()
+                            if vapiManager.isCallActive || vapiManager.isConnecting {
+                                vapiManager.deactivateVoiceCompanion()
+                            } else {
+                                vapiManager.activateVoiceCompanion()
+                            }
                         }) {
                             ZStack {
                                 Circle()
                                     .fill(Color(red: 0.2, green: 0.2, blue: 0.2))
                                     .frame(width: 70, height: 70)
                                 
-                                Image(systemName: isListening ? "mic.fill" : "mic.slash.fill")
+                                Image(systemName: vapiManager.isCallActive ? "phone.down.fill" : "phone.fill")
                                     .font(.system(size: 28))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(vapiManager.isCallActive ? .red : .green)
                             }
                         }
                         
@@ -98,6 +113,16 @@ struct ContentView: View {
                     .padding(.bottom, 30)
                 }
             }
+        }
+        .onAppear {
+            // Activate Vapi call when view appears
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                vapiManager.activateVoiceCompanion()
+            }
+        }
+        .onDisappear {
+            // Deactivate Vapi call when view disappears
+            vapiManager.deactivateVoiceCompanion()
         }
     }
 }
