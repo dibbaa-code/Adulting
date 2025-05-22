@@ -50,10 +50,10 @@ struct ProfileView: View {
                                 .font(.headline)
                                 .foregroundColor(.white)
                         }
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 24)
                         .background(Color(red: 0.2, green: 0.2, blue: 0.25))
-                        .cornerRadius(20)
+                        .cornerRadius(25)
                     }
                     .padding(.top, 20)
                     
@@ -81,45 +81,30 @@ struct ProfileView: View {
                         }
                     }
                     
-                    // Sign Out Button
-                    Button(action: {
-                        // Sign out action
-                    }) {
-                        Text("Sign Out")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.red.opacity(0.8))
-                            .cornerRadius(12)
+                    // Sign Out Section
+                    sectionCard(title: "Actions") {
+                        Button(action: {
+                            // Sign out action
+                        }) {
+                            HStack {
+                                Image(systemName: "rectangle.portrait.and.arrow.right")
+                                    .foregroundColor(.red)
+                                    .frame(width: 30)
+                                
+                                Text("Sign Out")
+                                    .font(.headline)
+                                    .foregroundColor(.red)
+                                
+                                Spacer()
+                            }
+                        }
+                        .padding(.vertical, 5)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 10)
                     .padding(.bottom, 30)
-                }
-                .padding(.horizontal)
-            }
-            
-            // Back button
-            VStack {
-                HStack {
-                    Button(action: {
-                        // Navigate back to voice screen
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .padding()
-                            .background(Color(red: 0.2, green: 0.2, blue: 0.2).opacity(0.7))
-                            .clipShape(Circle())
-                    }
-                    .padding(.leading, 20)
-                    .padding(.top, 10)
                     
                     Spacer()
                 }
-                
-                Spacer()
+                .padding(.horizontal)
             }
         }
     }
@@ -136,7 +121,7 @@ struct ProfileView: View {
                 content()
             }
             .padding()
-            .background(Color(red: 0.15, green: 0.15, blue: 0.2))
+            .background(Color(red: 0.2, green: 0.2, blue: 0.25))
             .cornerRadius(15)
         }
     }
@@ -183,10 +168,11 @@ struct ProfileView: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundColor(.gray)
                 
                 Text(value)
+                    .font(.headline)
                     .foregroundColor(.white)
             }
             
