@@ -15,8 +15,8 @@ struct ProfileView: View {
     @State private var userName: String = ""
     @State private var phoneNumber: String = ""
     @State private var email: String = ""
-    @State private var morningCallTime: Date = Date(timeIntervalSince1970: TimeInterval(8 * 3600))
-    @State private var eveningCallTime: Date = Date(timeIntervalSince1970: TimeInterval(21 * 3600))
+    @State private var morningCallTime: String = ""
+    @State private var eveningCallTime: String = ""
     
     // UI states
     @State private var isEditingName = false
@@ -294,7 +294,7 @@ struct ProfileView: View {
         }
     }
     
-    private func scheduleRow(title: String, time: Date, icon: String, color: Color) -> some View {
+    private func scheduleRow(title: String, time: String, icon: String, color: Color) -> some View {
         HStack {
             Image(systemName: icon)
                 .foregroundColor(color)
@@ -305,7 +305,7 @@ struct ProfileView: View {
             
             Spacer()
             
-            Text(formatTime(time))
+            Text(time)
                 .foregroundColor(.white)
                 .font(.headline)
         }

@@ -23,10 +23,10 @@ class FirebaseManager: ObservableObject {
     // Firestore
     private let db = Firestore.firestore()
     
-    // Date formatter for Firestore dates
-    private let dateFormatter: DateFormatter = {
+    // Time formatter for displaying time
+    private let timeFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        formatter.dateFormat = "h:mm a"
         return formatter
     }()
     
@@ -73,8 +73,8 @@ class FirebaseManager: ObservableObject {
             "phoneNumber": "",
             "email": "",
             "callStreak": 0,
-            "morningCallTime": Date(),
-            "eveningCallTime": Date(),
+            "morningCallTime":  "8:00 AM",
+            "eveningCallTime": "9:00 PM",
             "createdAt": Date()
         ]
         
@@ -87,8 +87,8 @@ class FirebaseManager: ObservableObject {
             phoneNumber: "",
             email: "",
             callStreak: 0,
-            morningCallTime: Date(),
-            eveningCallTime: Date(),
+            morningCallTime: "8:00 AM",
+            eveningCallTime: "9:00 PM",
             createdAt: Date()
         )
         
@@ -113,19 +113,12 @@ class FirebaseManager: ObservableObject {
                 let email = data["email"] as? String ?? ""
                 let callStreak = data["callStreak"] as? Int ?? 0
                 
-                // Handle dates
-                var morningCallTime = Date(timeIntervalSince1970: TimeInterval(8 * 3600))
-                var eveningCallTime = Date(timeIntervalSince1970: TimeInterval(21 * 3600))
+                // Get call times as strings
+                let morningCallTime = data["morningCallTime"] as? String ?? "8:00 AM"
+                let eveningCallTime = data["eveningCallTime"] as? String ?? "9:00 PM"
+                
+                // Handle created date
                 var createdAt = Date()
-                
-                if let morningTimestamp = data["morningCallTime"] as? Timestamp {
-                    morningCallTime = morningTimestamp.dateValue()
-                }
-                
-                if let eveningTimestamp = data["eveningCallTime"] as? Timestamp {
-                    eveningCallTime = eveningTimestamp.dateValue()
-                }
-                
                 if let createdTimestamp = data["createdAt"] as? Timestamp {
                     createdAt = createdTimestamp.dateValue()
                 }
@@ -167,9 +160,9 @@ class FirebaseManager: ObservableObject {
     
     // MARK: - Call Schedule Methods
     
-    func updateCallSchedule(morningCallTime: Date, eveningCallTime: Date) async throws {
+    func updateCallSchedule(morningCallTime: String, eveningCallTime: String) async throws {
         guard let userId = user?.uid else { return }
-        
+    
         try await db.collection("users").document(userId).updateData([
             "morningCallTime": morningCallTime,
             "eveningCallTime": eveningCallTime
@@ -221,7 +214,7 @@ struct UserProfile: Identifiable {
     var phoneNumber: String
     var email: String
     var callStreak: Int
-    var morningCallTime: Date
-    var eveningCallTime: Date
+    var morningCallTime: String
+    var eveningCallTime: String
     var createdAt: Date
 }

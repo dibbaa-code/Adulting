@@ -17,8 +17,25 @@ struct OnboardingView: View {
     @State private var isLoading = false
     @State private var errorMessage = ""
     
-    @State private var morningCallTime = Date(timeIntervalSince1970: TimeInterval(8 * 3600)) // 8:00 AM
-    @State private var eveningCallTime = Date(timeIntervalSince1970: TimeInterval(21 * 3600)) // 9:00 PM
+    // Default call times (8:00 AM and 9:00 PM)
+    @State private var morningCallTime = "8:00 AM"
+    @State private var eveningCallTime = "9:00 PM"
+    
+    // Helper function to create time bindings
+    private func timeBinding(for timeString: Binding<String>) -> Binding<Date> {
+        Binding<Date>(
+            get: {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "h:mm a"
+                return formatter.date(from: timeString.wrappedValue) ?? Date()
+            },
+            set: { newDate in
+                let formatter = DateFormatter()
+                formatter.dateFormat = "h:mm a"
+                timeString.wrappedValue = formatter.string(from: newDate)
+            }
+        )
+    }
     
     var body: some View {
         ZStack {
@@ -67,30 +84,46 @@ struct OnboardingView: View {
                     case 2:
                         // Call schedule step
                         VStack(spacing: 20) {
+                            Text("When would you like your daily calls?")
+                                .foregroundColor(.white)
+                                .font(.subheadline)
+                                .multilineTextAlignment(.center)
+                                .padding(.bottom, 5)
+                            
                             VStack(alignment: .leading, spacing: 10) {
-                                Text("Morning Call")
-                                    .foregroundColor(.white)
-                                    .font(.headline)
+                                HStack {
+                                    Image(systemName: "sunrise.fill")
+                                        .foregroundColor(.orange)
+                                    Text("Morning Call Time")
+                                        .foregroundColor(.white)
+                                        .font(.headline)
+                                }
                                 
-                                DatePicker("", selection: $morningCallTime, displayedComponents: .hourAndMinute)
+                                DatePicker("", selection: timeBinding(for: $morningCallTime), displayedComponents: .hourAndMinute)
                                     .labelsHidden()
                                     .datePickerStyle(WheelDatePickerStyle())
                                     .frame(maxWidth: .infinity)
                                     .background(Color(red: 0.2, green: 0.2, blue: 0.25))
                                     .cornerRadius(10)
+                                    .accentColor(.blue)
                             }
                             
                             VStack(alignment: .leading, spacing: 10) {
-                                Text("Evening Call")
-                                    .foregroundColor(.white)
-                                    .font(.headline)
+                                HStack {
+                                    Image(systemName: "moon.stars.fill")
+                                        .foregroundColor(.indigo)
+                                    Text("Evening Call Time")
+                                        .foregroundColor(.white)
+                                        .font(.headline)
+                                }
                                 
-                                DatePicker("", selection: $eveningCallTime, displayedComponents: .hourAndMinute)
+                                DatePicker("", selection: timeBinding(for: $eveningCallTime), displayedComponents: .hourAndMinute)
                                     .labelsHidden()
                                     .datePickerStyle(WheelDatePickerStyle())
                                     .frame(maxWidth: .infinity)
                                     .background(Color(red: 0.2, green: 0.2, blue: 0.25))
                                     .cornerRadius(10)
+                                    .accentColor(.blue)
                             }
                         }
                         .padding(.horizontal, 20)
