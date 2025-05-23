@@ -10,6 +10,7 @@ import Vapi
 
 struct ContentView: View {
     @StateObject private var vapiManager = VapiManager.shared
+    @EnvironmentObject private var firebaseManager: FirebaseManager
     @State private var isListening = true
     @State private var animationAmount = 1.0
     

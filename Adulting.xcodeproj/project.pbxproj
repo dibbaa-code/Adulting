@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		862F57612DDFA5C300EBDE9F /* Vapi in Frameworks */ = {isa = PBXBuildFile; productRef = 862F57602DDFA5C300EBDE9F /* Vapi */; };
+		862F577A2DE0397B00EBDE9F /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 862F57792DE0397B00EBDE9F /* FirebaseAuth */; };
+		862F577C2DE0397B00EBDE9F /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 862F577B2DE0397B00EBDE9F /* FirebaseFirestore */; };
+		862F577E2DE0397B00EBDE9F /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 862F577D2DE0397B00EBDE9F /* FirebaseFirestoreCombine-Community */; };
+		862F57802DE0397B00EBDE9F /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 862F577F2DE0397B00EBDE9F /* FirebaseMessaging */; };
+		862F57822DE03A8300EBDE9F /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 862F57812DE03A8300EBDE9F /* FirebaseAnalytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +62,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				862F57612DDFA5C300EBDE9F /* Vapi in Frameworks */,
+				862F577E2DE0397B00EBDE9F /* FirebaseFirestoreCombine-Community in Frameworks */,
+				862F57822DE03A8300EBDE9F /* FirebaseAnalytics in Frameworks */,
+				862F57802DE0397B00EBDE9F /* FirebaseMessaging in Frameworks */,
+				862F577A2DE0397B00EBDE9F /* FirebaseAuth in Frameworks */,
+				862F577C2DE0397B00EBDE9F /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,6 +128,11 @@
 			name = Adulting;
 			packageProductDependencies = (
 				862F57602DDFA5C300EBDE9F /* Vapi */,
+				862F57792DE0397B00EBDE9F /* FirebaseAuth */,
+				862F577B2DE0397B00EBDE9F /* FirebaseFirestore */,
+				862F577D2DE0397B00EBDE9F /* FirebaseFirestoreCombine-Community */,
+				862F577F2DE0397B00EBDE9F /* FirebaseMessaging */,
+				862F57812DE03A8300EBDE9F /* FirebaseAnalytics */,
 			);
 			productName = Adulting;
 			productReference = 862F57292DDFA2D200EBDE9F /* Adulting.app */;
@@ -203,6 +218,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				862F575F2DDFA5C300EBDE9F /* XCRemoteSwiftPackageReference "client-sdk-ios" */,
+				862F57782DE0397B00EBDE9F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 862F572A2DDFA2D200EBDE9F /* Products */;
@@ -579,6 +595,14 @@
 				kind = branch;
 			};
 		};
+		862F57782DE0397B00EBDE9F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.13.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -586,6 +610,31 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 862F575F2DDFA5C300EBDE9F /* XCRemoteSwiftPackageReference "client-sdk-ios" */;
 			productName = Vapi;
+		};
+		862F57792DE0397B00EBDE9F /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 862F57782DE0397B00EBDE9F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		862F577B2DE0397B00EBDE9F /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 862F57782DE0397B00EBDE9F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		862F577D2DE0397B00EBDE9F /* FirebaseFirestoreCombine-Community */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 862F57782DE0397B00EBDE9F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseFirestoreCombine-Community";
+		};
+		862F577F2DE0397B00EBDE9F /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 862F57782DE0397B00EBDE9F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		862F57812DE03A8300EBDE9F /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 862F57782DE0397B00EBDE9F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
