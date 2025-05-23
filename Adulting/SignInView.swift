@@ -18,23 +18,34 @@ struct SignInView: View {
             Color.black.ignoresSafeArea()
             
             VStack(spacing: 30) {
+                Spacer()
+                
                 // App logo/icon
                 Image(systemName: "person.and.background.dotted")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 100, height: 100)
+                    .frame(width: 120, height: 120)
                     .foregroundColor(.white)
+                    .padding(.bottom, 20)
                 
                 // App name
                 Text("Adulting")
-                    .font(.system(size: 40, weight: .bold))
+                    .font(.system(size: 42, weight: .bold))
                     .foregroundColor(.white)
                 
                 // App description
                 Text("Your daily voice companion")
                     .font(.title3)
                     .foregroundColor(.gray)
-                    .padding(.bottom, 40)
+                    .padding(.bottom, 60)
+                
+                // Welcome message
+                Text("Welcome to your personal daily assistant")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 30)
+                    .padding(.bottom, 20)
                 
                 // Sign in button
                 Button(action: signInAnonymously) {
@@ -66,6 +77,12 @@ struct SignInView: View {
                 }
                 
                 Spacer()
+                
+                // Privacy note
+                Text("Your information is private and secure")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .padding(.bottom, 20)
             }
             .padding()
         }
