@@ -67,17 +67,14 @@ class FirebaseManager: ObservableObject {
     
     private func createUserProfile(userId: String) async throws {
         // Create profile data dictionary manually
-        let morningTime = Date(timeIntervalSince1970: TimeInterval(8 * 3600)) // 8:00 AM
-        let eveningTime = Date(timeIntervalSince1970: TimeInterval(21 * 3600)) // 9:00 PM
-        
         let userData: [String: Any] = [
             "id": userId,
-            "name": "New User",
+            "name": "",
             "phoneNumber": "",
             "email": "",
             "callStreak": 0,
-            "morningCallTime": morningTime,
-            "eveningCallTime": eveningTime,
+            "morningCallTime": Date(),
+            "eveningCallTime": Date(),
             "createdAt": Date()
         ]
         
@@ -86,12 +83,12 @@ class FirebaseManager: ObservableObject {
         // Create local user profile object
         let newProfile = UserProfile(
             id: userId,
-            name: "New User",
+            name: "",
             phoneNumber: "",
             email: "",
             callStreak: 0,
-            morningCallTime: morningTime,
-            eveningCallTime: eveningTime,
+            morningCallTime: Date(),
+            eveningCallTime: Date(),
             createdAt: Date()
         )
         

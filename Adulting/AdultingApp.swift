@@ -27,19 +27,27 @@ struct AdultingApp: App {
     var body: some Scene {
         WindowGroup {
             if firebaseManager.isSignedIn {
-                ContentView()
-                    .environmentObject(firebaseManager)
-                    .onAppear {
-                        // Set up audio session for the app
-                        do {
-                            try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth])
-                            try AVAudioSession.sharedInstance().setActive(true)
-                        } catch {
-                            print("Failed to set up audio session: \(error)")
+                // Check if user profile is complete
+                if let profile = firebaseManager.userProfile, !profile.name.isEmpty {
+                    // User is fully onboarded, show main content
+                    ContentView()
+                        .environmentObject(firebaseManager)
+                        .onAppear {
+                            // Set up audio session for the app
+                            do {
+                                try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth])
+                                try AVAudioSession.sharedInstance().setActive(true)
+                            } catch {
+                                print("Failed to set up audio session: \(error)")
+                            }
                         }
-                    }
+                } else {
+                    // User is authenticated but needs to complete onboarding
+                    OnboardingView()
+                        .environmentObject(firebaseManager)
+                }
             } else {
-                // Show a simple sign-in view
+                // User is not signed in, show sign-in view
                 SignInView()
                     .environmentObject(firebaseManager)
             }
