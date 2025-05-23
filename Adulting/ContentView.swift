@@ -69,7 +69,7 @@ struct ContentView: View {
                             if vapiManager.isCallActive || vapiManager.isConnecting {
                                 vapiManager.deactivateVoiceCompanion()
                             } else {
-                                vapiManager.activateVoiceCompanion()
+                                vapiManager.startVoiceCompanion()
                             }
                         }) {
                             ZStack {
@@ -116,10 +116,8 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            // Activate Vapi call when view appears
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                vapiManager.activateVoiceCompanion()
-            }
+            // Prepare Vapi without starting a call
+            vapiManager.activateVoiceCompanion()
         }
         .onDisappear {
             // Deactivate Vapi call when view disappears

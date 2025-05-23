@@ -174,7 +174,15 @@ class VapiManager: ObservableObject {
     }
     
     // Call this when the app becomes active in ContentView
+    // This no longer automatically starts a call
     func activateVoiceCompanion() {
+        // Prepare the voice companion without starting a call
+        // Just ensure the audio session is active
+        activateAudioSession()
+    }
+    
+    // Call this to manually start a call
+    func startVoiceCompanion() {
         if !isCallActive && !isConnecting {
             startCall()
         }
