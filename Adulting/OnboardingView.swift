@@ -83,43 +83,46 @@ struct OnboardingView: View {
                         .padding(.horizontal, 20)
                     case 2:
                         // Call schedule step
-                        VStack(spacing: 20) {
-                            Text("When would you like your daily calls?")
-                                .foregroundColor(.white)
-                                .font(.subheadline)
-                                .multilineTextAlignment(.center)
-                                .padding(.bottom, 5)
-                            
-                            VStack(alignment: .leading, spacing: 10) {
+                        VStack(spacing: 25) {
+                            // Morning call time selector
+                            VStack(alignment: .leading, spacing: 12) {
                                 HStack {
                                     Image(systemName: "sunrise.fill")
                                         .foregroundColor(.orange)
+                                        .font(.system(size: 18))
                                     Text("Morning Call Time")
                                         .foregroundColor(.white)
                                         .font(.headline)
                                 }
+                                .padding(.horizontal, 5)
                                 
                                 DatePicker("", selection: timeBinding(for: $morningCallTime), displayedComponents: .hourAndMinute)
                                     .labelsHidden()
                                     .datePickerStyle(WheelDatePickerStyle())
+                                    .frame(height: 100)
                                     .frame(maxWidth: .infinity)
                                     .background(Color(red: 0.2, green: 0.2, blue: 0.25))
                                     .cornerRadius(10)
                                     .accentColor(.blue)
                             }
+                            .padding(.bottom, 10)
                             
-                            VStack(alignment: .leading, spacing: 10) {
+                            // Evening call time selector
+                            VStack(alignment: .leading, spacing: 12) {
                                 HStack {
                                     Image(systemName: "moon.stars.fill")
                                         .foregroundColor(.indigo)
+                                        .font(.system(size: 18))
                                     Text("Evening Call Time")
                                         .foregroundColor(.white)
                                         .font(.headline)
                                 }
+                                .padding(.horizontal, 5)
                                 
                                 DatePicker("", selection: timeBinding(for: $eveningCallTime), displayedComponents: .hourAndMinute)
                                     .labelsHidden()
                                     .datePickerStyle(WheelDatePickerStyle())
+                                    .frame(height: 100)
                                     .frame(maxWidth: .infinity)
                                     .background(Color(red: 0.2, green: 0.2, blue: 0.25))
                                     .cornerRadius(10)
@@ -131,7 +134,7 @@ struct OnboardingView: View {
                         EmptyView()
                     }
                 }
-                .frame(height: 250)
+                .frame(height: 350)
                 
                 // Error message
                 if !errorMessage.isEmpty {
