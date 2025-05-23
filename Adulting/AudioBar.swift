@@ -1,13 +1,12 @@
 //
 //  AudioBar.swift
-//  Adulting
+//  Audio visualization bar component for assistant speaking
 //
 //  Created by Divya Saini on 5/22/25.
 //
 
 import SwiftUI
 
-// Audio visualization bar component
 struct AudioBar: View {
     let color: Color
     let isAnimating: Bool

@@ -1,6 +1,6 @@
 //
 //  OnboardingView.swift
-//  Adulting
+//  User onboarding view where system asks questions like name, email, phone, call schedule etc.
 //
 //  Created by Divya Saini on 5/22/25.
 //

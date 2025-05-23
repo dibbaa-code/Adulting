@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  Adulting
+//  Main home page view after onboarding is completed
 //
 //  Created by Divya Saini on 5/22/25.
 //

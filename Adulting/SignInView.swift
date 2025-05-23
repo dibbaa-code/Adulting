@@ -1,6 +1,6 @@
 //
 //  SignInView.swift
-//  Adulting
+//  Auth page view (get started page view, first page when user opens the app first time or after signing out of the app)
 //
 //  Created by Divya Saini on 5/22/25.
 //

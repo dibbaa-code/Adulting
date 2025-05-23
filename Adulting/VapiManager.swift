@@ -1,6 +1,6 @@
 //
 //  VapiManager.swift
-//  Adulting
+//  Vapi intergration wrapper class for the voice api
 //
 //  Created by Divya Saini on 5/22/25.
 //

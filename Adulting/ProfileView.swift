@@ -1,6 +1,6 @@
 //
 //  ProfileView.swift
-//  Adulting
+//  Profile page view where user can see their profile details and sign out of the app
 //
 //  Created by Divya Saini on 5/22/25.
 //

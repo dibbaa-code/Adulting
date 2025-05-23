@@ -1,6 +1,6 @@
 //
 //  FirebaseManager.swift
-//  Adulting
+//  Firebase integration wrapper class
 //
 //  Created by Divya Saini on 5/22/25.
 //
