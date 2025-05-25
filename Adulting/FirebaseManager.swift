@@ -73,8 +73,8 @@ class FirebaseManager: ObservableObject {
             "phoneNumber": "",
             "email": "",
             "callStreak": 0,
-            "morningCallTime":  "8:00 AM",
-            "eveningCallTime": "9:00 PM",
+            "morningCallTime":  "",
+            "eveningCallTime": "",
             "createdAt": Date()
         ]
         
@@ -87,8 +87,8 @@ class FirebaseManager: ObservableObject {
             phoneNumber: "",
             email: "",
             callStreak: 0,
-            morningCallTime: "8:00 AM",
-            eveningCallTime: "9:00 PM",
+            morningCallTime: "",
+            eveningCallTime: "",
             createdAt: Date()
         )
         
@@ -114,8 +114,8 @@ class FirebaseManager: ObservableObject {
                 let callStreak = data["callStreak"] as? Int ?? 0
                 
                 // Get call times as strings
-                let morningCallTime = data["morningCallTime"] as? String ?? "8:00 AM"
-                let eveningCallTime = data["eveningCallTime"] as? String ?? "9:00 PM"
+                let morningCallTime = data["morningCallTime"] as? String ?? ""
+                let eveningCallTime = data["eveningCallTime"] as? String ?? ""
                 
                 // Handle created date
                 var createdAt = Date()
