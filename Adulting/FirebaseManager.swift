@@ -30,6 +30,11 @@ class FirebaseManager: ObservableObject {
         return formatter
     }()
     
+    // Get the local timezone
+    private var localTimezone: String {
+        return TimeZone.current.identifier
+    }
+    
     private init() {
         setupAuthStateListener()
     }
@@ -66,6 +71,9 @@ class FirebaseManager: ObservableObject {
     // MARK: - User Profile Methods
     
     private func createUserProfile(userId: String) async throws {
+        // Get the user's local timezone
+        let localTimezone = TimeZone.current.identifier
+        
         // Create profile data dictionary manually
         let userData: [String: Any] = [
             "id": userId,
@@ -75,6 +83,7 @@ class FirebaseManager: ObservableObject {
             "callStreak": 0,
             "morningCallTime":  "",
             "eveningCallTime": "",
+            "timezone": localTimezone,
             "createdAt": Date()
         ]
         
@@ -89,6 +98,7 @@ class FirebaseManager: ObservableObject {
             callStreak: 0,
             morningCallTime: "",
             eveningCallTime: "",
+            timezone: localTimezone,
             createdAt: Date()
         )
         
@@ -113,9 +123,16 @@ class FirebaseManager: ObservableObject {
                 let email = data["email"] as? String ?? ""
                 let callStreak = data["callStreak"] as? Int ?? 0
                 
-                // Get call times as strings
-                let morningCallTime = data["morningCallTime"] as? String ?? ""
-                let eveningCallTime = data["eveningCallTime"] as? String ?? ""
+                // Get timezone first
+                let timezone = data["timezone"] as? String ?? TimeZone.current.identifier
+                
+                // Get call times as strings (these are stored in UTC) and convert to local time
+                let utcMorningCallTime = data["morningCallTime"] as? String ?? ""
+                let utcEveningCallTime = data["eveningCallTime"] as? String ?? ""
+                
+                // Convert UTC times to local time for display
+                let morningCallTime = TimeUtility.convertFromUTC(timeString: utcMorningCallTime, toTimezone: timezone)
+                let eveningCallTime = TimeUtility.convertFromUTC(timeString: utcEveningCallTime, toTimezone: timezone)
                 
                 // Handle created date
                 var createdAt = Date()
@@ -131,6 +148,7 @@ class FirebaseManager: ObservableObject {
                     callStreak: callStreak,
                     morningCallTime: morningCallTime,
                     eveningCallTime: eveningCallTime,
+                    timezone: timezone,
                     createdAt: createdAt
                 )
                 
@@ -158,17 +176,26 @@ class FirebaseManager: ObservableObject {
         }
     }
     
+
+
     // MARK: - Call Schedule Methods
     
     func updateCallSchedule(morningCallTime: String, eveningCallTime: String) async throws {
         guard let userId = user?.uid else { return }
+        
+        // Get the user's timezone
+        let timezone = userProfile?.timezone ?? TimeZone.current.identifier
+        
+        // Convert local times to UTC for storage
+        let utcMorningCallTime = TimeUtility.convertToUTC(timeString: morningCallTime, fromTimezone: timezone)
+        let utcEveningCallTime = TimeUtility.convertToUTC(timeString: eveningCallTime, fromTimezone: timezone)
     
         try await db.collection("users").document(userId).updateData([
-            "morningCallTime": morningCallTime,
-            "eveningCallTime": eveningCallTime
+            "morningCallTime": utcMorningCallTime,
+            "eveningCallTime": utcEveningCallTime
         ])
         
-        // Update local user profile
+        // Update local user profile with the local time (not UTC)
         DispatchQueue.main.async {
             self.userProfile?.morningCallTime = morningCallTime
             self.userProfile?.eveningCallTime = eveningCallTime
@@ -216,5 +243,6 @@ struct UserProfile: Identifiable {
     var callStreak: Int
     var morningCallTime: String
     var eveningCallTime: String
+    var timezone: String
     var createdAt: Date
 }
