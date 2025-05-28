@@ -84,17 +84,15 @@ struct ContentView: View {
                         }
                         
                         // Notes/Transcript button
-                        Button(action: {
-                            // Action for notes
-                        }) {
+                        NavigationLink(destination: JournalView()) {
                             ZStack {
                                 Circle()
                                     .fill(Color(red: 0.2, green: 0.2, blue: 0.2))
                                     .frame(width: 70, height: 70)
                                 
-                                Image(systemName: "doc.text.fill")
+                                Image(systemName: "list.bullet.clipboard.fill")
                                     .font(.system(size: 28))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.blue)
                             }
                         }
                         
@@ -107,7 +105,7 @@ struct ContentView: View {
                                 
                                 Image(systemName: "person.fill")
                                     .font(.system(size: 28))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.purple)
                             }
                         }
                     }
@@ -116,6 +114,8 @@ struct ContentView: View {
             }
         }
         .onAppear {
+            // Set the Firebase manager
+            vapiManager.setFirebaseManager(firebaseManager)
             // Prepare Vapi without starting a call
             vapiManager.activateVoiceCompanion()
         }

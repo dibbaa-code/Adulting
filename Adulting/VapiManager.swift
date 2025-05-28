@@ -11,6 +11,7 @@ import AVFoundation
 import Vapi
 
 class VapiManager: ObservableObject {
+    private weak var firebaseManager: FirebaseManager?
     static let shared = VapiManager()
     
     // Vapi instance
@@ -74,13 +75,15 @@ class VapiManager: ObservableObject {
                 self.isReady = true
             }
         }
-        
-        // Start the assistant with the existing instance
+
+        let userId = firebaseManager?.userProfile?.id ?? ""
+        // Start the assistant
         Task {
             do {
                 try await vapi?.start(
                   assistantId: assistantId,
-                  metadata: ["user_name": "Alex", "call_type": "immediate"]
+                  metadata: ["call_type": "immediate"],
+                  assistantOverrides: ["variableValues": ["user_id": userId]]
                 )
             } catch {
                 DispatchQueue.main.async {
@@ -193,5 +196,10 @@ class VapiManager: ObservableObject {
         if isCallActive || isConnecting {
             endCall()
         }
+    }
+    
+    // Add a method to set the Firebase manager
+    func setFirebaseManager(_ manager: FirebaseManager) {
+        self.firebaseManager = manager
     }
 }
