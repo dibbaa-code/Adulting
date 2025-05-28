@@ -17,11 +17,20 @@ struct JournalView: View {
     // Firestore reference
     private let db = Firestore.firestore()
     
-    // Get today's date in YYYY-MM-DD format
+    // Get today's date in YYYY-MM-DD format in UTC
     private var todayDateString: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = TimeZone(identifier: "UTC")
         return formatter.string(from: Date())
+    }
+    
+    // Format date for display in local timezone
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE, MMMM d"
+        formatter.timeZone = TimeZone.current  // Keep display in local time
+        return formatter.string(from: date)
     }
     
     var body: some View {
@@ -37,7 +46,18 @@ struct JournalView: View {
                         .fontWeight(.bold)
                         .foregroundColor(.white)
                     
-                    Text(formatDate(Date()))
+                    // Convert UTC date string back to Date for local display
+                    let displayDate = {
+                        let formatter = DateFormatter()
+                        formatter.dateFormat = "yyyy-MM-dd"
+                        formatter.timeZone = TimeZone(identifier: "UTC")
+                        if let date = formatter.date(from: todayDateString) {
+                            return date
+                        }
+                        return Date()
+                    }()
+                    
+                    Text(formatDate(displayDate))
                         .font(.subheadline)
                         .foregroundColor(.gray)
                 }
@@ -85,13 +105,6 @@ struct JournalView: View {
         .onAppear {
             setupTodoListener()
         }
-    }
-    
-    // Format date for display
-    private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE, MMMM d"
-        return formatter.string(from: date)
     }
     
     // Setup Firestore listener for real-time updates
