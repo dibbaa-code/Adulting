@@ -45,7 +45,11 @@ class FirebaseManager: ObservableObject {
             self?.isSignedIn = user != nil
             
             if let user = user {
-                self?.fetchUserProfile(userId: user.uid)
+                // Don't fetch profile immediately after sign in
+                // The signInAnonymously method will handle initial profile creation and fetching
+                if self?.userProfile == nil {
+                    self?.fetchUserProfile(userId: user.uid)
+                }
             } else {
                 self?.userProfile = nil
             }
@@ -59,9 +63,15 @@ class FirebaseManager: ObservableObject {
         print("User signed in anonymously with ID: \(result.user.uid)")
         
         // Create a default user profile for new users
-        if try await db.collection("users").document(result.user.uid).getDocument().exists == false {
+        let docRef = db.collection("users").document(result.user.uid)
+        let docSnapshot = try await docRef.getDocument()
+        
+        if !docSnapshot.exists {
             try await createUserProfile(userId: result.user.uid)
         }
+        
+        // Now fetch the profile after ensuring it exists
+        fetchUserProfile(userId: result.user.uid)
     }
     
     func signOut() throws {
@@ -109,11 +119,24 @@ class FirebaseManager: ObservableObject {
     }
     
     func fetchUserProfile(userId: String) {
+        print("Fetching user profile for user ID: \(userId)")
         db.collection("users").document(userId).addSnapshotListener { [weak self] snapshot, error in
-            guard let self = self, let snapshot = snapshot, snapshot.exists, error == nil else {
-                print("Error fetching user profile: \(error?.localizedDescription ?? "Unknown error")")
+            if let error = error {
+                print("Error fetching user profile: \(error.localizedDescription)")
                 return
             }
+            
+            guard let snapshot = snapshot else {
+                print("No snapshot available")
+                return
+            }
+            
+            if !snapshot.exists {
+                print("User profile document does not exist")
+                return
+            }
+            
+            guard let self = self else { return }
             
             if let data = snapshot.data() {
                 // Manually convert Firestore data to UserProfile

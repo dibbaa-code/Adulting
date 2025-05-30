@@ -84,7 +84,7 @@ struct ContentView: View {
                         }
                         
                         // Notes/Transcript button
-                        NavigationLink(destination: JournalView()) {
+                        NavigationLink(destination: PlannerView()) {
                             ZStack {
                                 Circle()
                                     .fill(Color(red: 0.2, green: 0.2, blue: 0.2))
