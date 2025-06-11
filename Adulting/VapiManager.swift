@@ -25,13 +25,15 @@ class VapiManager: ObservableObject {
     @Published var isConnecting = false
     @Published var isReady = false
     
-    // Replace with your actual Vapi API key
-    private let apiKey = "3e24a7be-8ab7-49fa-8fe5-1ea466dbd9d8"
-    
-    // Assistant configuration
-    private let assistantId = "be6f23c3-6a99-46f1-8ae6-48b92bfbcb27"
+    // Load API key and assistant ID from VapiSecrets
+    private let apiKey: String
+    private let assistantId: String
     
     private init() {
+        // Load configuration from VapiSecrets
+        self.apiKey = VapiSecrets.apiKey
+        self.assistantId = VapiSecrets.assistantId
+        
         setupVapiInstance()
     }
     

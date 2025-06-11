@@ -18,6 +18,9 @@ Pods/
 # Firebase
 GoogleService-Info.plist
 
+# API Secrets
+VapiSecrets.swift
+
 # Swift Package Manager
 .build/
 .swiftpm/
