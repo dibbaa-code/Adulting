@@ -199,8 +199,23 @@ class FirebaseManager: ObservableObject {
         }
     }
     
-
-
+    func updateGoogleCredentials(accessToken: String, refreshToken: String, email: String) async throws {
+        guard let userId = user?.uid else { return }
+        
+        try await db.collection("users").document(userId).updateData([
+            "googleAccessToken": accessToken,
+            "googleRefreshToken": refreshToken,
+            "googleEmail": email
+        ])
+        
+        // Update local user profile
+        DispatchQueue.main.async {
+            self.userProfile?.googleAccessToken = accessToken
+            self.userProfile?.googleRefreshToken = refreshToken
+            self.userProfile?.googleEmail = email
+        }
+    }
+    
     // MARK: - Call Schedule Methods
     
     func updateCallSchedule(morningCallTime: String, eveningCallTime: String) async throws {
@@ -268,4 +283,7 @@ struct UserProfile: Identifiable {
     var eveningCallTime: String
     var timezone: String
     var createdAt: Date
+    var googleAccessToken: String?
+    var googleRefreshToken: String?
+    var googleEmail: String?
 }
