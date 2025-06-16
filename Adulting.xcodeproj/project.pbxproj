@@ -425,6 +425,7 @@
 				DEVELOPMENT_TEAM = BU462BR844;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app does not use the camera directly, but some of its components require this permission.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Microphone access required in order to make and receive audio calls.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -454,6 +455,7 @@
 				DEVELOPMENT_TEAM = BU462BR844;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app does not use the camera directly, but some of its components require this permission.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Microphone access required in order to make and receive audio calls.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
