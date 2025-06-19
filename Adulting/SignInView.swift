@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import GoogleSignIn
 
 struct SignInView: View {
     @EnvironmentObject private var firebaseManager: FirebaseManager
+    @StateObject private var googleAuth = GoogleAuthenticator.shared
     @State private var isLoading = false
     @State private var errorMessage = ""
     
@@ -48,7 +50,7 @@ struct SignInView: View {
                     .padding(.bottom, 20)
                 
                 // Sign in button
-                Button(action: signInAnonymously) {
+                Button(action: signInWithGoogle) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 25)
                             .fill(Color.blue)
@@ -59,7 +61,7 @@ struct SignInView: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                 .scaleEffect(1.5)
                         } else {
-                            Text("Get Started")
+                            Text("Continue with Google")
                                 .font(.title3)
                                 .fontWeight(.bold)
                                 .foregroundColor(.white)
@@ -88,17 +90,29 @@ struct SignInView: View {
         }
     }
     
-    private func signInAnonymously() {
+    private func signInWithGoogle() {
         isLoading = true
         errorMessage = ""
         
         Task {
             do {
-                try await firebaseManager.signInAnonymously()
+                let user = try await googleAuth.signIn()
+                
+                // Get the ID token for Firebase authentication
+                guard let idToken = user.idToken?.tokenString else {
+                    throw NSError(domain: "GoogleSignIn", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to get ID token"])
+                }
+                
+                // Sign in to Firebase with Google credentials
+                try await firebaseManager.signInWithGoogle(idToken: idToken, accessToken: user.accessToken.tokenString)
+                
+                DispatchQueue.main.async {
+                    self.isLoading = false
+                }
             } catch {
                 DispatchQueue.main.async {
-                    errorMessage = "Failed to sign in: \(error.localizedDescription)"
-                    isLoading = false
+                    self.errorMessage = "Failed to sign in with Google: \(error.localizedDescription)"
+                    self.isLoading = false
                 }
             }
         }

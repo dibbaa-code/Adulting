@@ -9,6 +9,7 @@ import SwiftUI
 import Firebase
 import FirebaseAuth
 import FirebaseFirestore
+import GoogleSignIn
 
 class FirebaseManager: ObservableObject {
     static let shared = FirebaseManager()
@@ -58,11 +59,13 @@ class FirebaseManager: ObservableObject {
     
     // MARK: - Authentication Methods
     
-    func signInAnonymously() async throws {
-        let result = try await Auth.auth().signInAnonymously()
-        print("User signed in anonymously with ID: \(result.user.uid)")
+    func signInWithGoogle(idToken: String, accessToken: String) async throws {
+        let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
+        let result = try await Auth.auth().signIn(with: credential)
         
-        // Create a default user profile for new users
+        print("User signed in with Google: \(result.user.uid)")
+        
+        // Check if user profile exists, create if not
         let docRef = db.collection("users").document(result.user.uid)
         let docSnapshot = try await docRef.getDocument()
         
@@ -70,41 +73,55 @@ class FirebaseManager: ObservableObject {
             try await createUserProfile(userId: result.user.uid)
         }
         
-        // Now fetch the profile after ensuring it exists
+        // Update Google credentials in the user profile using GoogleAuthenticator methods
+        let googleAuth = GoogleAuthenticator.shared
+        if let refreshToken = googleAuth.getRefreshToken(),
+            let email = googleAuth.getEmail() {
+            try await updateGoogleCredentials(accessToken: accessToken, refreshToken: refreshToken, email: email)
+        }
+        
+        // Fetch the updated profile
         fetchUserProfile(userId: result.user.uid)
     }
-    
+
     func signOut() throws {
         try Auth.auth().signOut()
     }
     
     // MARK: - User Profile Methods
-    
     private func createUserProfile(userId: String) async throws {
         // Get the user's local timezone
         let localTimezone = TimeZone.current.identifier
         
+        // Get user info from Google Sign-In
+        let googleAuth = GoogleAuthenticator.shared
+        let userName = googleAuth.getUserName() ?? ""
+        let userEmail = googleAuth.getEmail() ?? ""
+        
         // Create profile data dictionary manually
         let userData: [String: Any] = [
             "id": userId,
-            "name": "",
+            "name": userName,
             "phoneNumber": "",
-            "email": "",
+            "email": userEmail,
             "callStreak": 0,
             "morningCallTime":  "",
             "eveningCallTime": "",
             "timezone": localTimezone,
-            "createdAt": Date()
+            "createdAt": Date(),
+            "googleAccessToken": "",
+            "googleRefreshToken": "",
+            "isGoogleCalendarConnected": false
         ]
         
         try await db.collection("users").document(userId).setData(userData)
         
-        // Create local user profile object
+        // Create local UserProfile object
         let newProfile = UserProfile(
             id: userId,
-            name: "",
+            name: userName,
             phoneNumber: "",
-            email: "",
+            email: userEmail,
             callStreak: 0,
             morningCallTime: "",
             eveningCallTime: "",

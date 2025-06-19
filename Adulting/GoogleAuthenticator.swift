@@ -7,16 +7,29 @@ class GoogleAuthenticator: ObservableObject {
     
     @Published var isAuthenticated = false
     
-    // Google OAuth configuration
-    private let clientID = "<ENTER_YOUR_CLIENT_ID>"
+    // Google OAuth scopes
     private let scopes = [
         "https://www.googleapis.com/auth/calendar.readonly",
         "https://www.googleapis.com/auth/calendar.events.readonly"
     ]
     
+    // MARK: - Configuration
+    static func configure() {
+        guard let path = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
+              let plist = NSDictionary(contentsOfFile: path),
+              let clientId = plist["CLIENT_ID"] as? String else {
+            fatalError("GoogleService-Info.plist not found or CLIENT_ID missing")
+        }
+        
+        GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientId)
+    }
+    
+    static func handleURL(_ url: URL) -> Bool {
+        return GIDSignIn.sharedInstance.handle(url)
+    }
+    
     private init() {
-        // Initialize Google Sign In
-        GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
+        // Configuration is handled by the static configure() method
     }
     
     func signIn() async throws -> GIDGoogleUser {
@@ -61,8 +74,11 @@ class GoogleAuthenticator: ObservableObject {
         return GIDSignIn.sharedInstance.currentUser?.profile?.email
     }
     
-    // MARK: - Calendar API
+    func getUserName() -> String? {
+        return GIDSignIn.sharedInstance.currentUser?.profile?.name
+    }
     
+    // MARK: - Calendar API
     func fetchCalendarEvents() async throws -> [String: Any] {
         guard let accessToken = getAccessToken() else {
             throw NSError(domain: "GoogleAuthenticator", code: -1, userInfo: [NSLocalizedDescriptionKey: "No access token available"])

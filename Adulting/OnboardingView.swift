@@ -10,9 +10,7 @@ import SwiftUI
 struct OnboardingView: View {
     @EnvironmentObject private var firebaseManager: FirebaseManager
     
-    @State private var name = ""
     @State private var phoneNumber = ""
-    @State private var email = ""
     @State private var currentStep = 0
     @State private var isLoading = false
     @State private var errorMessage = ""
@@ -45,7 +43,7 @@ struct OnboardingView: View {
             VStack(spacing: 30) {
                 // Progress indicator
                 HStack(spacing: 8) {
-                    ForEach(0..<3) { step in
+                    ForEach(0..<2) { step in
                         Circle()
                             .fill(step <= currentStep ? Color.blue : Color.gray.opacity(0.5))
                             .frame(width: 10, height: 10)
@@ -63,25 +61,12 @@ struct OnboardingView: View {
                 VStack(spacing: 25) {
                     switch currentStep {
                     case 0:
-                        // Name step
-                        TextField("Your Name", text: $name)
+                        // Phone number step
+                        TextField("Phone Number", text: $phoneNumber)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .keyboardType(.phonePad)
                             .padding(.horizontal, 20)
-                            .autocapitalization(.words)
                     case 1:
-                        // Contact info step
-                        VStack(spacing: 15) {
-                            TextField("Phone Number", text: $phoneNumber)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .keyboardType(.phonePad)
-                            
-                            TextField("Email Address", text: $email)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .keyboardType(.emailAddress)
-                                .autocapitalization(.none)
-                        }
-                        .padding(.horizontal, 20)
-                    case 2:
                         // Call schedule step
                         VStack(spacing: 25) {
                             // Morning call time selector
@@ -169,7 +154,7 @@ struct OnboardingView: View {
                     
                     // Next/Finish button
                     Button(action: {
-                        if currentStep < 2 {
+                        if currentStep < 1 {
                             if validateCurrentStep() {
                                 currentStep += 1
                             }
@@ -186,7 +171,7 @@ struct OnboardingView: View {
                                 ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                             } else {
-                                Text(currentStep == 2 ? "Finish" : "Next")
+                                Text(currentStep == 1 ? "Finish" : "Next")
                                     .font(.headline)
                                     .foregroundColor(.white)
                             }
@@ -203,10 +188,8 @@ struct OnboardingView: View {
     private var stepTitle: String {
         switch currentStep {
         case 0:
-            return "What's your name?"
+            return "Phone Number"
         case 1:
-            return "Contact Information"
-        case 2:
             return "Call Schedule"
         default:
             return ""
@@ -218,21 +201,8 @@ struct OnboardingView: View {
         
         switch currentStep {
         case 0:
-            if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                errorMessage = "Please enter your name"
-                return false
-            }
-        case 1:
             // Phone validation is optional
-            if !email.isEmpty {
-                // Simple email validation
-                let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
-                let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
-                if !emailPredicate.evaluate(with: email) {
-                    errorMessage = "Please enter a valid email address"
-                    return false
-                }
-            }
+            return true
         default:
             break
         }
@@ -248,9 +218,7 @@ struct OnboardingView: View {
             do {
                 // Update user profile with collected information
                 try await firebaseManager.updateUserProfile(
-                    name: name,
-                    phoneNumber: phoneNumber,
-                    email: email
+                    phoneNumber: phoneNumber
                 )
                 
                 // Update call schedule
