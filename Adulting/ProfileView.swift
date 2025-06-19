@@ -7,11 +7,9 @@
 
 import SwiftUI
 import Firebase
-import GoogleSignIn
 
 struct ProfileView: View {
     @EnvironmentObject private var firebaseManager: FirebaseManager
-    @StateObject private var googleAuthenticator = GoogleAuthenticator.shared
     
     // Editable states
     @State private var userName: String = ""
@@ -26,8 +24,6 @@ struct ProfileView: View {
     @State private var isEditingEmail = false
     @State private var isEditingSchedule = false
     @State private var showSignOutAlert = false
-    @State private var showGoogleAuthError = false
-    @State private var googleAuthError: String = ""
     
     var body: some View {
         ZStack {
@@ -153,56 +149,6 @@ struct ProfileView: View {
                                         isEditingEmail = true
                                     }
                             }
-                            
-                            Divider()
-                                .background(Color.gray.opacity(0.3))
-                            
-                            // Google Calendar Integration
-                            if let googleEmail = firebaseManager.userProfile?.googleEmail {
-                                HStack {
-                                    Image(systemName: "calendar")
-                                        .foregroundColor(.blue)
-                                        .frame(width: 30)
-                                    
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text("Google Calendar")
-                                            .font(.subheadline)
-                                            .foregroundColor(.gray)
-                                        
-                                        Text(googleEmail)
-                                            .font(.headline)
-                                            .foregroundColor(.white)
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    Button(action: {
-                                        Task {
-                                            await disconnectGoogleCalendar()
-                                        }
-                                    }) {
-                                        Text("Disconnect")
-                                            .foregroundColor(.red)
-                                    }
-                                }
-                            } else {
-                                Button(action: {
-                                    Task {
-                                        await connectGoogleCalendar()
-                                    }
-                                }) {
-                                    HStack {
-                                        Image(systemName: "calendar.badge.plus")
-                                            .foregroundColor(.blue)
-                                            .frame(width: 30)
-                                        
-                                        Text("Connect Google Calendar")
-                                            .foregroundColor(.white)
-                                        
-                                        Spacer()
-                                    }
-                                }
-                            }
                         }
                     }
                     
@@ -312,36 +258,6 @@ struct ProfileView: View {
         } catch {
             print("Error signing out: \(error.localizedDescription)")
         }
-    }
-    
-    // MARK: - Google Calendar Methods
-    
-    private func connectGoogleCalendar() async {
-        do {
-            let user = try await googleAuthenticator.signIn()
-            
-            if let accessToken = googleAuthenticator.getAccessToken(),
-               let refreshToken = googleAuthenticator.getRefreshToken(),
-               let email = googleAuthenticator.getEmail() {
-                try await firebaseManager.updateGoogleCredentials(
-                    accessToken: accessToken,
-                    refreshToken: refreshToken,
-                    email: email
-                )
-            }
-        } catch {
-            googleAuthError = error.localizedDescription
-            showGoogleAuthError = true
-        }
-    }
-    
-    private func disconnectGoogleCalendar() async {
-        googleAuthenticator.signOut()
-        try? await firebaseManager.updateGoogleCredentials(
-            accessToken: "",
-            refreshToken: "",
-            email: ""
-        )
     }
     
     // Helper Views
