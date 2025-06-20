@@ -16,7 +16,7 @@ struct ProfileView: View {
         DispatchQueue.main.async {
             Task {
                 do {
-                    try await self.firebaseManager.toggleCallsEnabled()
+                    try await self.firebaseManager.toggleCalls()
                 } catch {
                     print("Error toggling calls: \(error.localizedDescription)")
                 }
