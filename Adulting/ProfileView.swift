@@ -11,6 +11,19 @@ import Firebase
 struct ProfileView: View {
     @EnvironmentObject private var firebaseManager: FirebaseManager
     
+    // Helper function for toggling calls
+    private func toggleCalls() {
+        DispatchQueue.main.async {
+            Task {
+                do {
+                    try await self.firebaseManager.toggleCallsEnabled()
+                } catch {
+                    print("Error toggling calls: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
     // Editable states
     @State private var userName: String = ""
     @State private var phoneNumber: String = ""
@@ -24,6 +37,8 @@ struct ProfileView: View {
     @State private var isEditingEmail = false
     @State private var isEditingSchedule = false
     @State private var showSignOutAlert = false
+    @State private var showDisableCallsAlert = false
+    @State private var isDisablingCalls = false
     
     var body: some View {
         ZStack {
@@ -154,6 +169,59 @@ struct ProfileView: View {
                     
                     // Sign Out Section
                     sectionCard(title: "Actions") {
+                        // Calls Enabled Toggle
+                        HStack {
+                            Image(systemName: firebaseManager.userProfile?.callsEnabled == true ? "phone" : "phone.down")
+                                .foregroundColor(firebaseManager.userProfile?.callsEnabled == true ? .green : .orange)
+                                .frame(width: 30)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Phone Calls")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                
+                                Text(firebaseManager.userProfile?.callsEnabled == true ? "Calls are enabled" : "Calls are disabled")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            }
+                            
+                            Spacer()
+                            
+                            if isDisablingCalls {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                            } else {
+                                Toggle("", isOn: Binding(
+                                    get: { firebaseManager.userProfile?.callsEnabled ?? true },
+                                    set: { newValue in
+                                        DispatchQueue.main.async {
+                                            if newValue {
+                                                // Enabling calls - do it immediately
+                                                toggleCalls()
+                                            } else {
+                                                // Disabling calls - show confirmation alert
+                                                showDisableCallsAlert = true
+                                            }
+                                        }
+                                    }
+                                ))
+                                .toggleStyle(SwitchToggleStyle(tint: .green))
+                            }
+                        }
+                        .padding(.vertical, 5)
+                        .alert("Disable Calls", isPresented: $showDisableCallsAlert) {
+                            Button("Cancel", role: .cancel) { }
+                            Button("Disable Calls", role: .destructive) {
+                                toggleCalls()
+                            }
+                        } message: {
+                            Text("Are you sure you want to disable calls?")
+                        }
+                        
+                        Divider()
+                            .background(Color.gray.opacity(0.3))
+                        
+                        // Sign Out Button
                         Button(action: {
                             showSignOutAlert = true
                         }) {

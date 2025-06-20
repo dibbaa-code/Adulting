@@ -107,11 +107,12 @@ class FirebaseManager: ObservableObject {
             "callStreak": 0,
             "morningCallTime":  "",
             "eveningCallTime": "",
+            "callsEnabled": true,
             "timezone": localTimezone,
             "createdAt": Date(),
             "googleAccessToken": "",
             "googleRefreshToken": "",
-            "isGoogleCalendarConnected": false
+            "isGoogleCalendarConnected": true
         ]
         
         try await db.collection("users").document(userId).setData(userData)
@@ -125,8 +126,12 @@ class FirebaseManager: ObservableObject {
             callStreak: 0,
             morningCallTime: "",
             eveningCallTime: "",
+            callsEnabled: true,
             timezone: localTimezone,
-            createdAt: Date()
+            createdAt: Date(),
+            googleAccessToken: "",
+            googleRefreshToken: "",
+            isGoogleCalendarConnected: true
         )
         
         // Update the published property on the main thread
@@ -174,6 +179,9 @@ class FirebaseManager: ObservableObject {
                 let morningCallTime = TimeUtility.convertFromUTC(timeString: utcMorningCallTime, toTimezone: timezone)
                 let eveningCallTime = TimeUtility.convertFromUTC(timeString: utcEveningCallTime, toTimezone: timezone)
                 
+                // Get calls enabled
+                let callsEnabled = data["callsEnabled"] as? Bool ?? true
+                
                 // Handle created date
                 var createdAt = Date()
                 if let createdTimestamp = data["createdAt"] as? Timestamp {
@@ -188,8 +196,12 @@ class FirebaseManager: ObservableObject {
                     callStreak: callStreak,
                     morningCallTime: morningCallTime,
                     eveningCallTime: eveningCallTime,
+                    callsEnabled: callsEnabled,
                     timezone: timezone,
-                    createdAt: createdAt
+                    createdAt: createdAt,
+                    googleAccessToken: data["googleAccessToken"] as? String ?? "",
+                    googleRefreshToken: data["googleRefreshToken"] as? String ?? "",
+                    isGoogleCalendarConnected: data["isGoogleCalendarConnected"] as? Bool ?? true
                 )
                 
                 self.userProfile = profile
@@ -222,19 +234,18 @@ class FirebaseManager: ObservableObject {
         try await db.collection("users").document(userId).updateData([
             "googleAccessToken": accessToken,
             "googleRefreshToken": refreshToken,
-            "googleEmail": email
+            "email": email
         ])
         
         // Update local user profile
         DispatchQueue.main.async {
             self.userProfile?.googleAccessToken = accessToken
             self.userProfile?.googleRefreshToken = refreshToken
-            self.userProfile?.googleEmail = email
+            self.userProfile?.email = email
         }
     }
     
     // MARK: - Call Schedule Methods
-    
     func updateCallSchedule(morningCallTime: String, eveningCallTime: String) async throws {
         guard let userId = user?.uid else { return }
         
@@ -257,8 +268,30 @@ class FirebaseManager: ObservableObject {
         }
     }
     
-    // MARK: - Streak Methods
+    // MARK: - Call Management
+    func toggleCalls() async throws {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            throw NSError(domain: "FirebaseManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not authenticated"])
+        }
+        
+        guard let currentProfile = userProfile else {
+            throw NSError(domain: "FirebaseManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "User profile not found"])
+        }
+        
+        let newCallsEnabled = !currentProfile.callsEnabled
+        
+        // Update Firebase
+        try await db.collection("users").document(userId).updateData([
+            "callsEnabled": newCallsEnabled
+        ])
+        
+        // Update local profile
+        DispatchQueue.main.async {
+            self.userProfile?.callsEnabled = newCallsEnabled
+        }
+    }
     
+    // MARK: - Streak Methods
     func incrementStreak() async throws {
         guard let userId = user?.uid else { return }
         
@@ -289,7 +322,6 @@ class FirebaseManager: ObservableObject {
 }
 
 // MARK: - Data Models
-
 struct UserProfile: Identifiable {
     var id: String
     var name: String
@@ -298,9 +330,10 @@ struct UserProfile: Identifiable {
     var callStreak: Int
     var morningCallTime: String
     var eveningCallTime: String
+    var callsEnabled: Bool
     var timezone: String
     var createdAt: Date
     var googleAccessToken: String?
     var googleRefreshToken: String?
-    var googleEmail: String?
+    var isGoogleCalendarConnected: Bool
 }
