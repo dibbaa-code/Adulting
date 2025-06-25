@@ -9,6 +9,7 @@ import SwiftUI
 import AVFoundation
 import Firebase
 import GoogleSignIn
+import PostHog
 
 @main
 struct AdultingApp: App {
@@ -21,6 +22,9 @@ struct AdultingApp: App {
         
         // Configure Google Sign-In
         GoogleAuthenticator.configure()
+
+        // Initialize PostHog analytics and session replay
+        PostHogManager.shared.setup()
         
         // Request microphone permissions on app startup
         AVAudioSession.sharedInstance().requestRecordPermission { granted in

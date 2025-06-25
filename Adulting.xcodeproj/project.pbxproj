@@ -13,6 +13,7 @@
 		862F577E2DE0397B00EBDE9F /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 862F577D2DE0397B00EBDE9F /* FirebaseFirestoreCombine-Community */; };
 		862F57802DE0397B00EBDE9F /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 862F577F2DE0397B00EBDE9F /* FirebaseMessaging */; };
 		862F57822DE03A8300EBDE9F /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 862F57812DE03A8300EBDE9F /* FirebaseAnalytics */; };
+		863ECAA82E0BD05C002DAA08 /* PostHog in Frameworks */ = {isa = PBXBuildFile; productRef = 863ECAA72E0BD05C002DAA08 /* PostHog */; };
 		866F7CDC2E00D01B0031DD2B /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 866F7CDB2E00D01B0031DD2B /* GoogleSignIn */; };
 		866F7CDE2E00D01B0031DD2B /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 866F7CDD2E00D01B0031DD2B /* GoogleSignInSwift */; };
 /* End PBXBuildFile section */
@@ -82,6 +83,7 @@
 				866F7CDE2E00D01B0031DD2B /* GoogleSignInSwift in Frameworks */,
 				862F57802DE0397B00EBDE9F /* FirebaseMessaging in Frameworks */,
 				862F577A2DE0397B00EBDE9F /* FirebaseAuth in Frameworks */,
+				863ECAA82E0BD05C002DAA08 /* PostHog in Frameworks */,
 				862F577C2DE0397B00EBDE9F /* FirebaseFirestore in Frameworks */,
 				866F7CDC2E00D01B0031DD2B /* GoogleSignIn in Frameworks */,
 			);
@@ -152,6 +154,7 @@
 				862F57812DE03A8300EBDE9F /* FirebaseAnalytics */,
 				866F7CDB2E00D01B0031DD2B /* GoogleSignIn */,
 				866F7CDD2E00D01B0031DD2B /* GoogleSignInSwift */,
+				863ECAA72E0BD05C002DAA08 /* PostHog */,
 			);
 			productName = Adulting;
 			productReference = 862F57292DDFA2D200EBDE9F /* Adulting.app */;
@@ -239,6 +242,7 @@
 				862F575F2DDFA5C300EBDE9F /* XCRemoteSwiftPackageReference "client-sdk-ios" */,
 				862F57782DE0397B00EBDE9F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				866F7CDA2E00D01B0031DD2B /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				863ECAA62E0BD05C002DAA08 /* XCRemoteSwiftPackageReference "posthog-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 862F572A2DDFA2D200EBDE9F /* Products */;
@@ -627,6 +631,14 @@
 				minimumVersion = 11.13.0;
 			};
 		};
+		863ECAA62E0BD05C002DAA08 /* XCRemoteSwiftPackageReference "posthog-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/PostHog/posthog-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.28.1;
+			};
+		};
 		866F7CDA2E00D01B0031DD2B /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/google/GoogleSignIn-iOS.git";
@@ -667,6 +679,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 862F57782DE0397B00EBDE9F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAnalytics;
+		};
+		863ECAA72E0BD05C002DAA08 /* PostHog */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 863ECAA62E0BD05C002DAA08 /* XCRemoteSwiftPackageReference "posthog-ios" */;
+			productName = PostHog;
 		};
 		866F7CDB2E00D01B0031DD2B /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
