@@ -228,6 +228,9 @@ struct OnboardingView: View {
                 )
                 
                 // No need to set isLoading to false as the view will be dismissed
+                
+                // Track onboarding completion
+                PostHogManager.shared.trackOnboardingComplete(steps: 2)
             } catch {
                 DispatchQueue.main.async {
                     errorMessage = "Error saving profile: \(error.localizedDescription)"

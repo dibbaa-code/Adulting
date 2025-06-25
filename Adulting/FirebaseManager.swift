@@ -24,6 +24,10 @@ class FirebaseManager: ObservableObject {
     // Firestore
     private let db = Firestore.firestore()
     
+    // Firestore listeners that need to be detached on sign-out
+    private var userProfileListener: ListenerRegistration?
+    private var plannerListener: ListenerRegistration?
+    
     // Time formatter for displaying time
     private let timeFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -84,8 +88,28 @@ class FirebaseManager: ObservableObject {
         fetchUserProfile(userId: result.user.uid)
     }
 
+    /// Signs out the user from all authentication providers and tracks the event
     func signOut() throws {
+        // Track sign-out event before signing out
+        print("FirebaseManager: User signing out, tracking event")
+        PostHogManager.shared.trackSignOut()
+        
+        // Detach all Firestore listeners first to prevent permission errors
+        print("Detaching Firestore listeners")
+        userProfileListener?.remove()
+        userProfileListener = nil
+        
+        plannerListener?.remove()
+        plannerListener = nil
+        
+        // Sign out from Firebase
         try Auth.auth().signOut()
+        
+        // Sign out from Google
+        GoogleAuthenticator.shared.signOut()
+        
+        // Clear any cached user data
+        self.userProfile = nil
     }
     
     // MARK: - User Profile Methods
@@ -142,7 +166,12 @@ class FirebaseManager: ObservableObject {
     
     func fetchUserProfile(userId: String) {
         print("Fetching user profile for user ID: \(userId)")
-        db.collection("users").document(userId).addSnapshotListener { [weak self] snapshot, error in
+        
+        // Detach any existing listener first
+        userProfileListener?.remove()
+        
+        // Create and store new listener
+        userProfileListener = db.collection("users").document(userId).addSnapshotListener { [weak self] snapshot, error in
             if let error = error {
                 print("Error fetching user profile: \(error.localizedDescription)")
                 return

@@ -47,8 +47,57 @@ class PostHogManager {
         trackEvent("app_launched")
     }
 
-    // Track an event with optional properties
+    // MARK: - Analytics
+    
+    /// Track a screen view
+    func trackScreen(_ screenName: String, properties: [String: Any]? = nil) {
+        var props = properties ?? [String: Any]()
+        props["screen_name"] = screenName
+        
+        // First, capture a screen view event
+        PostHogSDK.shared.screen(screenName, properties: props)
+        
+        // Also track as a regular event to ensure it's captured
+        trackEvent("screen_viewed", properties: props)
+    }
+    
+    // MARK: - Critical Events
+    
+    /// Track when a user signs in
+    func trackSignIn(method: String, success: Bool, error: Error? = nil) {
+        var properties: [String: Any] = [
+            "method": method,
+            "success": success
+        ]
+        
+        if let error = error {
+            properties["error"] = error.localizedDescription
+        }
+        
+        trackEvent("user_sign_in", properties: properties)
+    }
+    
+    /// Track when a user signs out
+    func trackSignOut() {
+        trackEvent("user_sign_out")
+    }
+    
+    /// Track when a user completes onboarding
+    func trackOnboardingComplete(steps: Int) {
+        trackEvent("onboarding_complete", properties: ["steps_completed": steps])
+    }
+    
+    /// Track an event with optional properties
     func trackEvent(_ eventName: String, properties: [String: Any]? = nil) {
         PostHogSDK.shared.capture(eventName, properties: properties)
+    }
+
+    /// Track when an error occurs
+    func trackError(domain: String, code: Int, description: String) {
+        trackEvent("error_occurred", properties: [
+            "error_domain": domain,
+            "error_code": code,
+            "error_description": description
+        ])
     }
 }

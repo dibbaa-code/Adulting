@@ -42,6 +42,8 @@ struct AdultingApp: App {
                         ContentView()
                             .environmentObject(firebaseManager)
                             .onAppear {
+                                // Track main content view screen
+                                PostHogManager.shared.trackScreen("ContentView")
                                 // Set up audio session for the app
                                 do {
                                     try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth])
@@ -54,11 +56,19 @@ struct AdultingApp: App {
                         // User is authenticated but needs to complete onboarding
                         OnboardingView()
                             .environmentObject(firebaseManager)
+                            .onAppear {
+                                // Track onboarding view screen
+                                PostHogManager.shared.trackScreen("OnboardingView")
+                            }
                     }
                 } else {
                     // User is not signed in, show sign-in view
                     SignInView()
                         .environmentObject(firebaseManager)
+                        .onAppear {
+                            // Track sign-in view screen
+                            PostHogManager.shared.trackScreen("SignInView")
+                        }
                 }
             }
             .onOpenURL { url in
